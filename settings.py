@@ -33,4 +33,4 @@ DATABASES = {
 }
 """
 
-INSTALLED_APPS = ("db",)
+INSTALLED_APPS = ('async_models','db',)
