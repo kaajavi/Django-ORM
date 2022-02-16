@@ -14,17 +14,31 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 import django
 django.setup()
 
-# Import your models for use in your script
-from db.models import *
+############################################################################
+## Config FastAPI
+############################################################################
+
+from fastapi import FastAPI
+
+app = FastAPI()
 
 ############################################################################
 ## START OF APPLICATION
 ############################################################################
-""" Replace the code below with your own """
+from db.models import *
 
-# Seed a few users in the database
-User.objects.create(name='Dan')
-User.objects.create(name='Robert')
+@app.on_event("startup")
+async def startup_event():
+    await User.objects.async_create(name='Dan')
+    await User.objects.async_create(name='Robert')
 
-for u in User.objects.all():
-    print(f'ID: {u.id} \tUsername: {u.name}')
+
+
+@app.get("/")
+async def root():
+    users = await User.objects.async_all()
+    return {"users": list(users.values('name'))}
+
+
+
+
